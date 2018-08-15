@@ -9,7 +9,34 @@
  * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
- *
  *= require_tree .
  *= require_self
  */
+ @import "bootstrap";
+
+.notice {
+	background-color: pink;
+}
+
+.container {
+	margin-left: 50px;
+	margin-right: 50px;
+}
+
+.shortcut-table {
+	font-size: 14px;
+	margin-top: 20px;
+}
+
+.shortcut-table .title {
+	font-size: 16px;
+}
+
+.shortcut-table td {
+	word-break: break-all;
+}
+
+h2 {
+	padding-top: 20px;
+	padding-bottom: 20px;
+}

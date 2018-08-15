@@ -1,18 +1,37 @@
 class ShortcutsController < ApplicationController
-  before_action :set_shortcut, only: [:show, :edit, :update, :destroy]
+  before_action :set_shortcut, only: [:twilio, :edit, :update, :destroy]
 
-  # GET /shortcuts
-  # GET /shortcuts.json
+  def twilio
+    account_sid = 'AC686caf4e50e0db29ee0e0f23ad159fb7'
+    auth_token = '61d44c891c9ca3585712e9e38192149d'
+    phone_number = '+1' + params['number']
+    message = 'Hi, check out this awesome website:  ' + @shortcut.path
+
+    @client = Twilio::REST::Client.new account_sid, auth_token
+    @client.api.account.messages.create(
+      from: '+15128293862',
+      to:   phone_number,
+      body: message
+    )
+    flash[:notice] = 'Your link has been sent!'
+    redirect_to root_path
+  end
+
   def index
-    @shortcuts = Shortcut.all
+    @search_term = params[:shortlink]
+    @shortcuts = if @search_term.present?
+      Shortcut.where(name: @search_term)
+    else
+      Shortcut.all
+    end
+
+    @go_term = params[:go_link]
+    if @go_term.present?
+      @shortcut = Shortcut.find_by_name(@go_term)
+      redirect_to @shortcut.path
+    end
   end
 
-  # GET /shortcuts/1
-  # GET /shortcuts/1.json
-  def show
-  end
-
-  # GET /shortcuts/new
   def new
     @shortcut = Shortcut.new
   end
@@ -28,11 +47,11 @@ class ShortcutsController < ApplicationController
 
     respond_to do |format|
       if @shortcut.save
-        format.html { redirect_to @shortcut, notice: 'Shortcut was successfully created.' }
+        format.html { redirect_to root_path, notice: 'Shortcut was successfully created.' }
         format.json { render :show, status: :created, location: @shortcut }
       else
         format.html { render :new }
-        format.json { render json: @shortcut.errors, status: :unprocessable_entity }
+        format.json { render json: root_path.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -42,7 +61,7 @@ class ShortcutsController < ApplicationController
   def update
     respond_to do |format|
       if @shortcut.update(shortcut_params)
-        format.html { redirect_to @shortcut, notice: 'Shortcut was successfully updated.' }
+        format.html { redirect_to root_path, notice: 'Shortcut was successfully updated.' }
         format.json { render :show, status: :ok, location: @shortcut }
       else
         format.html { render :edit }
@@ -69,6 +88,17 @@ class ShortcutsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def shortcut_params
-      params.fetch(:shortcut, {})
+      params.require(:shortcut).permit(:name, :path)
+      # params.fetch(:shortcut, {})
+    end
+
+    def error_check(shortcut)
+      if shortcut
+        return false
+      else
+        error_message = "Im sorry, we can not find that shortlink"
+        flash[:notice] = error_message
+        return true
+      end
     end
 end

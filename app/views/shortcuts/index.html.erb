@@ -1,25 +1,50 @@
-<p id="notice"><%= notice %></p>
+<% if flash[:notice] %>
+  <div class="notice"><%= flash[:notice] %></div>
+<% end %>
 
-<h1>Shortcuts</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-    <% @shortcuts.each do |shortcut| %>
+<div class='container'>
+  <h2>Shortlinks</h2>
+  <div class='input_fields'>
+	  <%= form_tag(shortcuts_path, method: "get") do %>
+	    <%= label_tag(:go_link, "Go to shortlink:") %>
+	    <%= text_field_tag(:go_link) %>
+	    <%= submit_tag("Go") %>
+	  <% end %>
+	  <%= form_tag(shortcuts_path, method: "get") do %>
+	    <%= label_tag(:shortlink, "Search for shortlink:") %>
+	    <%= text_field_tag(:shortlink, @search_term) %>
+	    <%= submit_tag("Search") %>
+	  <% end %>
+	</div>
+	
+  <table class='table table-sm table-striped shortcut-table'>
+    <thead>
       <tr>
-        <td><%= link_to 'Show', shortcut %></td>
-        <td><%= link_to 'Edit', edit_shortcut_path(shortcut) %></td>
-        <td><%= link_to 'Destroy', shortcut, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <th>Name</th>
+        <th>Url</th>
+        <th>Share via SMS</th>
+        <th></th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<br>
-
-<%= link_to 'New Shortcut', new_shortcut_path %>
+    </thead>
+    <tbody>
+      <% @shortcuts.each do |sc| %>
+        <tr>
+          <td class='title'><%= sc.name %></td>
+          <td class='title'><%= sc.path %></td>
+          <td>
+            <%= form_tag(twilio_shortcut_path(sc), method: "get") do %>
+            <%= label_tag(:number, "Enter number:") %>
+            <%= text_field_tag(:number) %>
+            <%= submit_tag("Send") %>
+            <% end %>
+          </td>
+          <td><%= link_to 'Edit', edit_shortcut_path(sc) %></td>
+          <td><%= link_to 'Remove', sc, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <br>
+  <%= link_to 'New Shortcut', new_shortcut_path %>
+</div>

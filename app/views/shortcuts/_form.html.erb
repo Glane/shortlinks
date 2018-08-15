@@ -1,17 +1,31 @@
 <%= form_with(model: shortcut, local: true) do |form| %>
-  <% if shortcut.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(shortcut.errors.count, "error") %> prohibited this shortcut from being saved:</h2>
-
-      <ul>
-      <% shortcut.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div class="actions">
-    <%= form.submit %>
-  </div>
+  <table class='table table-sm table-striped shortcut-table'>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Url</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <%= form.label(:name, "Name:") %>
+          <%= form.text_field(:name) %>
+        </td>
+        <td>
+          <%= form.label(:path, "Url:") %>
+          <%= form.text_field(:path) %>
+        </td>
+        <td>
+          <div class="actions">
+            <%= form.submit %>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 <% end %>
+  
+
+

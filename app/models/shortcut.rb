@@ -1,2 +1,3 @@
 class Shortcut < ApplicationRecord
+
 end
